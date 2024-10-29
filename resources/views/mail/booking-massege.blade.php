@@ -332,7 +332,7 @@
                           <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                             <tbody>
                               <tr>
-                                <td> <a href="http://htmlemail.io" target="_blank">سجل دخولك للنظام</a> </td>
+                                <td> <a href="https://alshararahcenter.ly/school_rooms/public" target="_blank">سجل دخولك للنظام</a> </td>
                               </tr>
                             </tbody>
                           </table>
