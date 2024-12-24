@@ -2,18 +2,54 @@
 
 @section('section_content')
     <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">ملخص تقرير الحجوزات</h5>
+            <canvas id="doughnutChart"
+                style="max-height: 400px; display: block; box-sizing: border-box; height: 350px; width: 350px;" width="1051"
+                height="1051"></canvas>
+            <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                    new Chart(document.querySelector('#doughnutChart'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: [
+                                @foreach ($booking_sections as $key => $value)
+                                    '{{ $key }}',
+                                @endforeach
+                            ],
+                            datasets: [{
+                                data: [
+                                    @foreach ( $booking_sections as $booking_section )
+                                        {{ $booking_section }},
+                                    @endforeach
+                                ],
+                                backgroundColor: [
+                                    @foreach ($booking_sections as $booking_section)
+                                        'rgb({{ rand(0,255) }}, {{ rand(0,255) }}, {{ rand(0,255) }})',
+                                    @endforeach
+                                ],
+                                hoverOffset: 4
+                            }]
+                        }
+                    });
+                });
+            </script>
+        </div>
+    </div>
+
+
+    <div class="card">
         <div class="card-body overflow-scroll">
-            <h5 class="card-title d-inline-block">قائمة الحجوزات</h5>
-            <a href="{{ route('booking.multiple_message_form') }}" class="btn btn-primary mx-3">ارسال رسالة لعدة مستخدمين <i
-                    class="bi bi-chat-dots-fill"></i></a>
+            <h5 class="card-title d-inline-block">التقرير المفصل</h5>
             <table class="table mt-2 text-center datatable">
                 <thead>
                     <tr>
                         <th scope="col" class="text-center">اسم المستخدم</th>
                         <th scope="col" class="text-center">الصلاحية</th>
                         <th scope="col" class="text-center">القاعة</th>
-                        <th scope="col" class="text-center">التاريخ</th>
-                        <th scope="col" class="text-center">اجراء</th>
+                        <th scope="col" class="text-center">الطابق</th>
+                        <th scope="col" class="text-center">الموعد</th>
+                        <th scope="col" class="text-center">تاريخ الحجز</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -23,21 +59,10 @@
                                 <td>{{ $booking->users->name }}</td>
                                 <td>{{ $booking->users->role }}</td>
                                 <td>{{ $booking->rooms->name }}</td>
+                                <td>{{ $booking->rooms->floor }}</td>
                                 <td>{{ Carbon\Carbon::parse($booking->day)->format('Y-m-d') }} |
                                     {{ $booking->start_time_end_time }}</td>
-                                <td>
-                                    <a href="{{ route('booking.message_form', $booking->id) }}"
-                                        class="btn btn-primary mx-1"><i class="bi bi-chat-dots-fill"></i></a>
-                                    @if (Carbon\Carbon::parse($booking->day)->format('Y-m-d H') > Carbon\Carbon::now()->format('Y-m-d H'))
-                                        <form action="{{ route('booking.destroy', $booking->id) }}" method="POST"
-                                            class="d-inline">
-                                            @method('DELETE')
-                                            @csrf
-                                            <button role="submit" class="btn btn-danger"><i
-                                                    class="bi bi-x-circle-fill"></i></button>
-                                        </form>
-                                    @endif
-                                </td>
+                                <td>{{ $booking->created_at->format('Y-m-d') }}</td>
                             </tr>
                         @endforeach
                     @else
@@ -71,6 +96,7 @@
                             </tr>
                         @endforeach
                     @endif
+
                 </tbody>
             </table>
             <!-- End Default Table Example -->

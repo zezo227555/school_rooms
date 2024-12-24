@@ -1,62 +1,69 @@
 @extends('layout.mian_structer')
 
 @section('section_content')
-<div class="card overflow-scroll">
-    <div class="card-body">
-      <h5 class="card-title d-inline-block">قائمة المرافق</h5>
-      @if (auth()->user()->role == 'مسؤول نظام')
-        <button type="button" class="btn btn-primary float-start mt-3" data-bs-toggle="modal" data-bs-target="#basicModal">
-            <i class="bi bi-building-fill-add"></i>
-        </button>
-      @endif
-      <table class="table mt-2 text-center datatable">
-        <thead>
-          <tr>
-            <th scope="col" class="text-center">الاسم</th>
-            <th scope="col" class="text-center">السعة</th>
-            <th scope="col" class="text-center">متوفر</th>
-            <th scope="col" class="text-center">النوع</th>
-            <th scope="col" class="text-center">اجراء</th>
-          </tr>
-        </thead>
-        <tbody>
-            @foreach ($rooms as $room)
-                <tr>
-                    <td>{{ $room->name }}</td>
-                    <td>{{ $room->capacity }}</td>
-                    @if ($room->available == 1)
-                        <td><span class="btn btn-success"><i class="bi bi-check-lg"></i></span></td>
-                    @else
-                        <td><span class="btn btn-danger"><i class="bi bi-ban"></i></span></td>
-                    @endif
-                    <td>{{ $room->type }}</td>
-                    <td>
-                        @if (auth()->user()->role == 'مسؤول نظام')
-                            <form action="{{ route('room.destroy', $room->id) }}" method="POST" class="d-inline-block">
-                                @csrf
-                                @method('DELETE')
-                                <button role="submit" type="submit" class="btn btn-danger">
-                                    <i class="bi bi-backspace-fill"></i>
-                                </button>
-                            </form>
-                            <a href="{{ route('room.edit', $room->id) }}" class="btn btn-warning mx-1"><i class="bi bi-pencil-square"></i></a>
-                        @endif
-                        <a href="{{ route('room.show', $room->id) }}" class="btn btn-info"><i class="bi bi-eye-fill"></i></a>
-                        @if ((auth()->user()->role == 'طالب' || auth()->user()->role == 'عضو هيئة تدريس') && $room->available == 1)
-                            <form action="{{ route('booking.time_table') }}" method="GET" class="d-inline-block">
-                                @csrf
-                                <input type="text" name="room_id" value="{{ $room->id }}" hidden>
-                                <button role="submit" class="btn btn-primary mx-1"><i class="bi bi-table"></i></button>
-                            </form>
-                        @endif
-                    </td>
-                </tr>
-            @endforeach
-        </tbody>
-      </table>
-      <!-- End Default Table Example -->
+    <div class="card overflow-scroll">
+        <div class="card-body">
+            <h5 class="card-title d-inline-block">قائمة المرافق</h5>
+            @if (auth()->user()->role == 'مسؤول نظام')
+                <button type="button" class="btn btn-primary float-start mt-3" data-bs-toggle="modal"
+                    data-bs-target="#basicModal">
+                    <i class="bi bi-building-fill-add"></i>
+                </button>
+            @endif
+            <table class="table mt-2 text-center datatable">
+                <thead>
+                    <tr>
+                        <th scope="col" class="text-center">الاسم</th>
+                        <th scope="col" class="text-center">الطابق</th>
+                        <th scope="col" class="text-center">السعة</th>
+                        <th scope="col" class="text-center">متوفر</th>
+                        <th scope="col" class="text-center">النوع</th>
+                        <th scope="col" class="text-center">اجراء</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($rooms as $room)
+                        <tr>
+                            <td>{{ $room->name }}</td>
+                            <td>{{ $room->floor }}</td>
+                            <td>{{ $room->capacity }}</td>
+                            @if ($room->available == 1)
+                                <td><span class="btn btn-success"><i class="bi bi-check-lg"></i></span></td>
+                            @else
+                                <td><span class="btn btn-danger"><i class="bi bi-ban"></i></span></td>
+                            @endif
+                            <td>{{ $room->type }}</td>
+                            <td>
+                                @if (auth()->user()->role == 'مسؤول نظام')
+                                    <form action="{{ route('room.destroy', $room->id) }}" method="POST"
+                                        class="d-inline-block">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button role="submit" type="submit" class="btn btn-danger">
+                                            <i class="bi bi-backspace-fill"></i>
+                                        </button>
+                                    </form>
+                                    <a href="{{ route('room.edit', $room->id) }}" class="btn btn-warning mx-1"><i
+                                            class="bi bi-pencil-square"></i></a>
+                                @endif
+                                <a href="{{ route('room.show', $room->id) }}" class="btn btn-info"><i
+                                        class="bi bi-eye-fill"></i></a>
+                                @if ((auth()->user()->role == 'طالب' || auth()->user()->role == 'عضو هيئة تدريس') && $room->available == 1)
+                                    <form action="{{ route('booking.time_table') }}" method="GET" class="d-inline-block">
+                                        @csrf
+                                        <input type="text" name="room_id" value="{{ $room->id }}" hidden>
+                                        <button role="submit" class="btn btn-primary mx-1"><i
+                                                class="bi bi-table"></i></button>
+                                    </form>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+            <!-- End Default Table Example -->
+        </div>
     </div>
-  </div>
 @endsection
 
 @section('section_modals')
@@ -76,6 +83,17 @@
                                     <p class="text-danger">{{ $message }}</p>
                                 @enderror
                                 <input type="text" name="name" class="form-control mt-2">
+                            </div>
+                            <div class="form-group mt-2">
+                                <label>الطابق</label>
+                                @error('floor')
+                                    <p class="text-danger">{{ $message }}</p>
+                                @enderror
+                                <select class="form-select mt-2" name="floor" aria-label="Default select example">
+                                    <option value="الطابق الاول">الطابق الاول</option>
+                                    <option value="الطابق الثاني">الطابق الثاني</option>
+                                    <option value="الطابق الثالث">الطابق الثالث</option>
+                                </select>
                             </div>
                             <div class="form-group mt-2">
                                 <label>السعة</label>
@@ -112,7 +130,8 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">اغلاق</button>
-                            <button role="submit" class="btn btn-primary mt-2">حفظ <i class="bi bi-cloud-download"></i></button>
+                            <button role="submit" class="btn btn-primary mt-2">حفظ <i
+                                    class="bi bi-cloud-download"></i></button>
                         </div>
                     </div>
                 </div>

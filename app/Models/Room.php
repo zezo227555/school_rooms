@@ -12,7 +12,7 @@ class Room extends Model
     protected $table = 'rooms';
 
     protected $fillable = [
-        'name', 'description', 'capacity', 'available', 'type', 'image',
+        'name', 'floor', 'description', 'capacity', 'available', 'type', 'image',
     ];
 
     public function booking() : HasMany

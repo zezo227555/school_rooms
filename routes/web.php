@@ -47,6 +47,8 @@ Route::middleware(IsUserLogedIn::class)->group(function (){
 
     // rooms
     Route::resource('room', RoomController::class);
+    Route::get('reports', [RoomController::class,'report'])->name('room.report');
+    Route::get('reports/show', [RoomController::class,'report_show'])->name('room.report_show');
 
     // booking
     Route::resource('booking', BookingController::class);
@@ -57,6 +59,8 @@ Route::middleware(IsUserLogedIn::class)->group(function (){
     // emails
     Route::get('booking/{booking_id}/message_form', [BookingController::class, 'message_form'])->name('booking.message_form');
     Route::post('booking/send_massege', [BookingController::class, 'send_massege'])->name('booking.send_massege');
+    Route::get('booking/multiple_message/form', [BookingController::class, 'multiple_message_form'])->name('booking.multiple_message_form');
+    Route::post('booking/multiple_message/send', [BookingController::class, 'multiple_message_send'])->name('booking.multiple_message_send');
 
     // rating
     Route::resource('reating', RatingController::class);

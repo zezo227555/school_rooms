@@ -16,7 +16,7 @@ class BookingController extends Controller
     {
         $bookings = [];
 
-        if(Auth::user()->role == 'مسؤول نظام' || Auth::user()->role == 'super_admin') {
+        if (Auth::user()->role == 'مسؤول نظام' || Auth::user()->role == 'super_admin') {
             $bookings = Booking::all();
         } else {
             $bookings = Booking::where('users_id', '=', Auth::user()->id)->get();
@@ -29,7 +29,9 @@ class BookingController extends Controller
     {
         $room = Room::find($request->room_id);
         $now = Carbon::now()->format('H');
-        $bookings = Booking::where('rooms_id', '=', $room->id)->whereDate('day', '=', $request->day)->get();
+        $bookings = Booking::where('rooms_id', '=', $room->id)
+            ->whereDate('day', '=', $request->day)
+            ->get();
         return view('booking.select_time', ['room' => $room, 'day' => $request->day, 'bookings' => $bookings, 'now' => $now]);
     }
 
@@ -50,27 +52,26 @@ class BookingController extends Controller
 
         $month_format = '';
 
-        for ($i = 1; $i <= $month->daysInMonth(); $i++){
-
+        for ($i = 1; $i <= $month->daysInMonth(); $i++) {
             $month_format = Carbon::create($month->format('Y'), $month->format('m'), $i);
 
-            if($month_format->format('l') != 'Friday'){
-                if($month_format->format('l') == 'Saturday'){
+            if ($month_format->format('l') != 'Friday') {
+                if ($month_format->format('l') == 'Saturday') {
                     array_push($days_of_the_month['Saturday'], $month_format->format('Y-m-d'));
                 }
-                if($month_format->format('l') == 'Sunday'){
+                if ($month_format->format('l') == 'Sunday') {
                     array_push($days_of_the_month['Sunday'], $month_format->format('Y-m-d'));
                 }
-                if($month_format->format('l') == 'Monday'){
+                if ($month_format->format('l') == 'Monday') {
                     array_push($days_of_the_month['Monday'], $month_format->format('Y-m-d'));
                 }
-                if($month_format->format('l') == 'Tuesday'){
+                if ($month_format->format('l') == 'Tuesday') {
                     array_push($days_of_the_month['Tuesday'], $month_format->format('Y-m-d'));
                 }
-                if($month_format->format('l') == 'Wednesday'){
+                if ($month_format->format('l') == 'Wednesday') {
                     array_push($days_of_the_month['Wednesday'], $month_format->format('Y-m-d'));
                 }
-                if($month_format->format('l') == 'Thursday'){
+                if ($month_format->format('l') == 'Thursday') {
                     array_push($days_of_the_month['Thursday'], $month_format->format('Y-m-d'));
                 }
             }
@@ -100,27 +101,26 @@ class BookingController extends Controller
 
         $month_format = '';
 
-        for ($i = 1; $i <= $month->daysInMonth(); $i++){
-
+        for ($i = 1; $i <= $month->daysInMonth(); $i++) {
             $month_format = Carbon::create($month->format('Y'), $month->format('m'), $i);
 
-            if($month_format->format('l') != 'Friday'){
-                if($month_format->format('l') == 'Saturday'){
+            if ($month_format->format('l') != 'Friday') {
+                if ($month_format->format('l') == 'Saturday') {
                     array_push($days_of_the_month['Saturday'], $month_format->format('Y-m-d'));
                 }
-                if($month_format->format('l') == 'Sunday'){
+                if ($month_format->format('l') == 'Sunday') {
                     array_push($days_of_the_month['Sunday'], $month_format->format('Y-m-d'));
                 }
-                if($month_format->format('l') == 'Monday'){
+                if ($month_format->format('l') == 'Monday') {
                     array_push($days_of_the_month['Monday'], $month_format->format('Y-m-d'));
                 }
-                if($month_format->format('l') == 'Tuesday'){
+                if ($month_format->format('l') == 'Tuesday') {
                     array_push($days_of_the_month['Tuesday'], $month_format->format('Y-m-d'));
                 }
-                if($month_format->format('l') == 'Wednesday'){
+                if ($month_format->format('l') == 'Wednesday') {
                     array_push($days_of_the_month['Wednesday'], $month_format->format('Y-m-d'));
                 }
-                if($month_format->format('l') == 'Thursday'){
+                if ($month_format->format('l') == 'Thursday') {
                     array_push($days_of_the_month['Thursday'], $month_format->format('Y-m-d'));
                 }
             }
@@ -185,11 +185,42 @@ class BookingController extends Controller
 
         $booking = Booking::find($request->booking_id);
 
-        Mail::to($booking->users->email)->send(new BookingMassege([
-            'username' => $booking->users->name,
-            'room' => $booking->rooms->name,
-            'massege' => $request->massege,
-        ]));
+        Mail::to($booking->users->email)->send(
+            new BookingMassege([
+                'username' => $booking->users->name,
+                'room' => $booking->rooms->name,
+                'massege' => $request->massege,
+            ]),
+        );
+
+        return redirect()->back()->with('success', 'تم الارسال بنجاح');
+    }
+
+    public function multiple_message_form()
+    {
+        $bookings = Booking::all();
+        return view('booking.multiple_message_form', ['bookings' => $bookings]);
+    }
+
+    public function multiple_message_send(Request $request)
+    {
+        $request->validate([
+            'massege' => 'required',
+        ], [
+            'massege.required' => 'هذا الحقل مطلوب',
+        ]);
+
+        foreach ($request->booking_id as $booking_id) {
+            $booking = Booking::find($booking_id);
+
+            Mail::to($booking->users->email)->send(
+                new BookingMassege([
+                    'username' => $booking->users->name,
+                    'room' => $booking->rooms->name,
+                    'massege' => $request->massege,
+                ]),
+            );
+        }
 
         return redirect()->back()->with('success', 'تم الارسال بنجاح');
     }

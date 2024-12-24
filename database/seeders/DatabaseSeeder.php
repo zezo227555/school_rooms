@@ -40,6 +40,7 @@ class DatabaseSeeder extends Seeder
         for ($i = 1; $i < 4; $i ++) {
             Room::create([
                 'name' => "CS Room $i",
+                'floor' => "الطابق الاول",
                 'description' => 'normal room',
                 'capacity' => 25,
                 'available' => false,
@@ -49,6 +50,7 @@ class DatabaseSeeder extends Seeder
 
             Room::create([
                 'name' => "MATH Room $i",
+                'floor' => "الطابق الاول",
                 'description' => 'normal room',
                 'capacity' => 25,
                 'available' => false,
@@ -58,6 +60,7 @@ class DatabaseSeeder extends Seeder
 
             Room::create([
                 'name' => "BIG Room $i",
+                'floor' => "الطابق الاول",
                 'description' => 'normal room',
                 'capacity' => 25,
                 'available' => false,
@@ -69,6 +72,7 @@ class DatabaseSeeder extends Seeder
         for ($i = 1; $i < 15; $i ++) {
             Room::create([
                 'name' => "CS Room $i",
+                'floor' => "الطابق الاول",
                 'description' => 'normal room',
                 'capacity' => 25,
                 'available' => true,
@@ -78,6 +82,7 @@ class DatabaseSeeder extends Seeder
 
             Room::create([
                 'name' => "MATH Room $i",
+                'floor' => "الطابق الاول",
                 'description' => 'normal room',
                 'capacity' => 25,
                 'available' => true,
@@ -87,6 +92,7 @@ class DatabaseSeeder extends Seeder
 
             Room::create([
                 'name' => "BIG Room $i",
+                'floor' => "الطابق الاول",
                 'description' => 'normal room',
                 'capacity' => 25,
                 'available' => true,

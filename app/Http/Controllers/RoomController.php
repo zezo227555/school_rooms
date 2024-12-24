@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Booking;
 use App\Models\Rating;
 use App\Models\Room;
 use Illuminate\Http\Request;
@@ -24,16 +25,17 @@ class RoomController extends Controller
     {
         $request->validate([
             'name' => 'required',
+            'floor' => 'required',
             'capacity' => 'required|min:0',
             'type' => 'required',
             'description' => 'required',
             'image' => 'required|mimes: jpg,png,jpeg',
         ]);
 
-        if($request->hasfile('image')){
+        if ($request->hasfile('image')) {
             $file = $request->file('image');
             $ecxtntion = $file->getClientOriginalExtension();
-            $filename = time().'.'.$ecxtntion;
+            $filename = time() . '.' . $ecxtntion;
             $file->move('rooms', $filename);
 
             $room = Room::create($request->all());
@@ -73,20 +75,20 @@ class RoomController extends Controller
     {
         $request->validate([
             'name' => 'required',
+            'floor' => 'required',
             'capacity' => 'required|min:0',
             'type' => 'required',
             'description' => 'required',
-
         ]);
 
-        if($request->hasfile('image')){
+        if ($request->hasfile('image')) {
             $request->validate([
                 'image' => 'required|mimes:png,jpg',
             ]);
-            unlink('rooms/'.$room->image);
+            unlink('rooms/' . $room->image);
             $file = $request->file('image');
             $ecxtntion = $file->getClientOriginalExtension();
-            $filename = time().'.'.$ecxtntion;
+            $filename = time() . '.' . $ecxtntion;
             $file->move('rooms', $filename);
 
             $room->update([
@@ -96,6 +98,7 @@ class RoomController extends Controller
 
         $room->update([
             'name' => $request->name,
+            'floor' => $request->floor,
             'capacity' => $request->capacity,
             'type' => $request->type,
             'description' => $request->description,
@@ -112,5 +115,41 @@ class RoomController extends Controller
     {
         $room->delete();
         return redirect()->back()->with('success', 'تم الاضافة بنجاح');
+    }
+
+    public function report()
+    {
+        return view('reports.form');
+    }
+
+    public function report_show(Request $request)
+    {
+        $request->validate([
+            'date_from' => 'required',
+            'date_to' => 'required',
+        ]);
+
+        $bookings = Booking::whereDate('created_at', '>=', $request->date_from)
+            ->whereDate('created_at', '<=', $request->date_to)
+            ->get();
+
+        $booking_sections = [];
+
+        foreach ($bookings as $booking) {
+            $booking_sections[$booking->rooms->name] = 0;
+        }
+
+        foreach ($booking_sections as $key => $value) {
+            $co = 0;
+            foreach ($bookings as $booking) {
+                if ($key == $booking->rooms->name) {
+                    $co ++;
+                }
+            }
+
+            $booking_sections[$key] = $co;
+        }
+
+        return view('reports.resault', ['bookings' => $bookings, 'booking_sections' => $booking_sections]);
     }
 }
