@@ -4,8 +4,10 @@
     <div class="card">
         <div class="card-body overflow-scroll">
             <h5 class="card-title d-inline-block">قائمة الحجوزات</h5>
-            <a href="{{ route('booking.multiple_message_form') }}" class="btn btn-primary mx-3">ارسال رسالة لعدة مستخدمين <i
-                    class="bi bi-chat-dots-fill"></i></a>
+            @if (auth()->user()->role == 'مسؤول نظام')
+                <a href="{{ route('booking.multiple_message_form') }}" class="btn btn-primary mx-3">ارسال رسالة لعدة مستخدمين
+                    <i class="bi bi-chat-dots-fill"></i></a>
+            @endif
             <table class="table mt-2 text-center datatable">
                 <thead>
                     <tr>
